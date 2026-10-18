@@ -1,0 +1,6 @@
+__pycache__/
+*.pyc
+*.log
+REPORT_DRAFT.md
+*.pdf
+*.tgz
