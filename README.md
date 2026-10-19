@@ -154,7 +154,7 @@ await c.close()
 
 | File | Purpose |
 |---|---|
-| **`wolfnet.py`** | ★ The communications library (single file) |
+| **`wolfnet.py`** | The communications library (single file) |
 | `moonfall_server.py` | Moderator and game logic |
 | `moonfall_client.py` | Interactive player terminal |
 | `moonfall_bot.py` | Bot player that makes random legal moves |
