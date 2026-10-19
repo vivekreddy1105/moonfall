@@ -25,7 +25,7 @@ A moderator server secretly deals roles to 4 or more players:
 **Night:** only wolves can speak, in their pack channel. The seer and doctor act secretly.
 The night ends as soon as everyone has acted, or when the timer runs out.
 
-**☀ Day:** everyone discusses, can `/w` whisper privately, and votes with `/vote`.
+**Day:** everyone discusses, can `/w` whisper privately, and votes with `/vote`.
 - The vote tally is public and updates live.
 - The player with the most votes is banished, and a tie banishes nobody.
 - Everyone else sees *that* you whispered, but not *what* you said, so whispering is itself a clue.
@@ -81,7 +81,7 @@ tmux kill-session -t moonfall && sudo -v && ./play_tmux.sh
 
 ---
 
-## ⌨️ Commands
+## Commands
 
 | Command | When | What it does |
 |---|---|---|
