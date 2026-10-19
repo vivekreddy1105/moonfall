@@ -121,9 +121,20 @@ class Game:
         err = lambda s: self.srv.send(name, ev("error", s))
         if not self.is_alive(name):
             return err("The dead can't act.")
+        r = self.role(name)
+        # Check role + phase BEFORE the target, so a misused command gets the
+        # most useful error (classmate feedback: Khushi Sharma).
+        rules = {"vote": (None, "day", "You can only vote during the day."),
+                 "kill": ("werewolf", "night", "Only werewolves can /kill, and only at night."),
+                 "see": ("seer", "night", "Only the seer can /see, and only at night."),
+                 "save": ("doctor", "night", "Only the doctor can /save, and only at night.")}
+        if verb not in rules:
+            return err(f"Unknown action {verb!r}.")
+        need_role, need_phase, why = rules[verb]
+        if self.phase != need_phase or (need_role and r != need_role):
+            return err(why)
         if not self.is_alive(target):
             return err(f"{target!r} is not a living player.")
-        r = self.role(name)
         if verb == "vote":
             if self.phase != "day":
                 return err("You can only vote during the day.")
