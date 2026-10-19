@@ -1,4 +1,5 @@
-# Moonfall
+# Moonfall: a Werewolves-like game over UNIX sockets
+
 Moonfall is a text-based social deduction game for Linux, built for Project #1.
 Every player is a **separate process running as a separate Linux user**, and all
 communication goes through a single library file, **`wolfnet.py`**. It uses
@@ -24,7 +25,7 @@ A moderator server secretly deals roles to 4 or more players:
 **Night:** only wolves can speak, in their pack channel. The seer and doctor act secretly.
 The night ends as soon as everyone has acted, or when the timer runs out.
 
-**Day:** everyone discusses, can `/w` whisper privately, and votes with `/vote`.
+**☀ Day:** everyone discusses, can `/w` whisper privately, and votes with `/vote`.
 - The vote tally is public and updates live.
 - The player with the most votes is banished, and a tie banishes nobody.
 - Everyone else sees *that* you whispered, but not *what* you said, so whispering is itself a clue.
@@ -52,13 +53,26 @@ sudo -v && ./play_tmux.sh                # server + 5 player panes, each a diffe
 ```
 In tmux, switch panes with `Ctrl+b` followed by an arrow key. Once everyone has joined, type `/start` in any pane.
 
+> **Run the game from `/opt/moonfall`, not from your home directory.** Ubuntu home
+> directories are private, so the other player accounts can't read the game files there,
+> and every player pane fails with `Permission denied`.
+
+**Custom player names:** pass the **same names** to both scripts. If you don't give any names,
+both scripts default to alice, bob, carol, dave and erin.
+```bash
+sudo ./setup_users.sh frank gina hank ivy
+sudo -v && ./play_tmux.sh frank gina hank ivy
+```
+Before opening tmux, `play_tmux.sh` checks that every player account exists and can read the
+game files. If one can't, it prints the exact fix.
+
 ### Option B: quick single-user test with bots
 ```bash
 python3 moonfall_server.py --dev --night 20 --day 30 &
 for n in bot1 bot2 bot3; do python3 moonfall_bot.py --nick $n & done
 python3 moonfall_client.py --nick me     # then type /start
 ```
-
+`--dev` lets one Linux user connect several times under nicknames. Never use it for real games.
 
 ### Restart a game
 ```bash
@@ -67,7 +81,7 @@ tmux kill-session -t moonfall && sudo -v && ./play_tmux.sh
 
 ---
 
-## Commands
+## ⌨️ Commands
 
 | Command | When | What it does |
 |---|---|---|
@@ -140,7 +154,7 @@ await c.close()
 
 | File | Purpose |
 |---|---|
-| **`wolfnet.py`** | he communications library (single file) |
+| **`wolfnet.py`** | ★ The communications library (single file) |
 | `moonfall_server.py` | Moderator and game logic |
 | `moonfall_client.py` | Interactive player terminal |
 | `moonfall_bot.py` | Bot player that makes random legal moves |
@@ -148,3 +162,13 @@ await c.close()
 | `play_tmux.sh` | Launches the server and one pane per player |
 
 ---
+
+Here's a starting point for raw-socket testing:
+```python
+import socket, struct, json
+s = socket.socket(socket.AF_UNIX); s.connect("/tmp/moonfall/game.sock")
+send = lambda m: s.sendall(struct.pack("!I", len(d := json.dumps(m).encode())) + d)
+send({"type": "hello"}); print(s.recv(4096))
+# now try: send({"type": "chat", "text": "hi", "sender": "alice"}) ...
+```
+
